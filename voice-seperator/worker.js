@@ -1,21 +1,20 @@
 var Firebase = require("firebase");
-var fs = require("fs");
-var exec = require("child_process").exec;
+var WorkQueue = require("./workqueue.js");
 
-var fb = new Firebase("https://echo-transcript.firebaseio.com/");
+var workCallback = function(data, base64Store, whenFinished) {
 
-var jobQueue = fb.child("jobs/0");
+  //This is where we actually process the data. We need to call "whenFinished" when we're done
+  //to let the queue know we're ready to handle a new job.
+  console.log("Started Processing: " + data.number);
+  console.log("Processing data at id: " + data.id);
+  var child = base64Store.child(data.id);
 
-//var currentJob = 0;
-//var jobCount = jobQueue.child("count", function(snapshot) {
-  //currentJob()
-//});
+  var jobPackage = child.val();
 
-var processOne = jobQueue.on("value", function(snapshot) {
-  var jobPackage = snapshot.val();
   if (!jobPackage) {
     return;
   }
+
   var conferenceCode = jobPackage.conferenceCode;
   var userId = jobPackage.userId;
   var base64Data = jobPackage.base64;
@@ -30,13 +29,15 @@ var processOne = jobQueue.on("value", function(snapshot) {
       var convert_to_wav = exec("base64 -d < " + fileName + " >  " + out_name, function(error, stdout, stderr) {
         var split_to_fragments = exec("sphinx_cont_seg -infile " + out_name, function(error, stdout, stderr) {
           if (err) {
-            console.log(err);
+	    /\d+ Utterance: [^ ]+/.
           }
         });
       });
     }
-  });
+  }
 
-});
+  //Call finished notifier when done
+  whenFinished();
+}
 
-console.log("hello world");
+new WorkQueue(itemsRef, workCallback);
