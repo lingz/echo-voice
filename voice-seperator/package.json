@@ -1,0 +1,23 @@
+{
+  "name": "echo-server",
+  "version": "0.0.0",
+  "description": "Echo server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/lingz/echo-server.git"
+  },
+  "author": "Lingliang Zhang, Karthik Sethuraman, Kathy Zhou",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lingz/echo-server/issues"
+  },
+  "homepage": "https://github.com/lingz/echo-server",
+  "devDependencies": {
+    "firebase": "^1.0.18"
+  }
+}
